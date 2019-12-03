@@ -108,12 +108,6 @@ class Database:
         self.cur.execute("DROP TABLE IF EXISTS Songs")
         self.cur.execute("CREATE TABLE Songs (song_id INTEGER PRIMARY KEY, title TEXT, lyrics TEXT, artist_id TEXT, genere_id)")
 
-        '''
-        self.cur.execute("DROP TABLE IF EXISTS Generes")
-        self.cur.execute("CREATE TABLE Generes (genere_id INTEGER PRIMARY KEY, genere TEXT)")
-        '''
-
-
         self.conn.commit()
 
 db = Database('FinalProject.db')
