@@ -89,8 +89,9 @@ class Musixmatch:
         return track_list
 
 musixmatch = Musixmatch('f85963e4bac8c2c33b149cab49c2b81d')
-#print(musixmatch.lyrics('Reket', 'mina ka'))
+#print(musixmatch.lyrics('Arctic Monkeys', 'Do I Wanna Know?'))
 #print(musixmatch.artist_top_tracks('drake', 5))
+
 
 
 class Database:
@@ -138,39 +139,20 @@ for artist in kris_top_artists:
     artist_id = artist[0]
     name = artist[1]
 
-    '''
-    try:
-        db.cur.execute("SELECT name FROM Artists WHERE name = ?", name)
-        print(name + 'already in database')
-        pass
-    
-    except:
-        db.cur.execute("INSERT INTO Artists (artist_id, name) VALUES (?, ?)", (artist_id, name))
-        pass
-    '''
     if name not in db_artists_list:
         db.cur.execute("INSERT INTO Artists (artist_id, name) VALUES (?, ?)", (artist_id, name))
         db_artists_list.append(name)
     
-    top_songs = musixmatch.artist_top_tracks(name, 5)
-    for song in top_songs:
-        song_id = song[0]
-        title = song[1]
-        lyrics = musixmatch.lyrics(name, title)
+        top_songs = musixmatch.artist_top_tracks(name, 5)
+        for song in top_songs:
+            song_id = song[0]
+            title = song[1]
+            lyrics = musixmatch.lyrics(name, title)
         
-        '''
-        try:
-            db.cur.execute("SELECT title FROM Songs WHERE title = ?", title)
-            print(title + ' already in database')
-            continue
-    
-        except:
-            db.cur.execute("INSERT INTO Songs (song_id, title, lyrics, artist_id) VALUES (?, ?, ?, ?)", (song_id, title, lyrics, artist_id))
-            continue
-        '''
-        if title not in db_songs_list:
-            db.cur.execute("INSERT INTO Songs (song_id, title, lyrics, artist_id) VALUES (?, ?, ?, ?)", (song_id, title, lyrics, artist_id))
-            db_songs_list.append(title)
+            if title not in db_songs_list:
+                db.cur.execute("INSERT INTO Songs (song_id, title, lyrics, artist_id) VALUES (?, ?, ?, ?)", (song_id, title, lyrics, artist_id))
+                db_songs_list.append(title)
     
     db.conn.commit()
     
+print(db.cur.execute("SELECT SUM(lyrics) FROM Songs WHERE lyrics = no lyrics"))
