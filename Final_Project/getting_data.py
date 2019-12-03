@@ -21,12 +21,7 @@ class Spotify:
         if self.token:
             self.sp = spotipy.Spotify(auth = self.token)
         else:
-            print("Can't get token for", self.username)
-
-    def write_cache_top_artists(self, cache_file):
-        cache_json = json.dumps(self.sp.current_user_top_artists(50, 0, 'long_term'), indent = 4)
-        with open(cache_file, 'w') as cache_file: 
-            cache_file.write(cache_json) 
+            print("Can't get token for", self.username) 
 
     def top_artists(self, limit, offset, time_range):
         artists_list = []
@@ -51,15 +46,34 @@ class Spotify:
         return liveness
 
 
+
+
+    def write_cache_top_artists(self, cache_file):
+        cache_json = json.dumps(self.sp.current_user_top_artists(50, 0, 'long_term'), indent = 4)
+        with open(cache_file, 'w') as cache_file: 
+            cache_file.write(cache_json)
+    
+    def write_cache_top_tracks(self, cache_file):
+        cache_json = json.dumps(self.sp.current_user_top_tracks(50, 0, 'long_term'), indent = 4)
+        with open(cache_file, 'w') as cache_file: 
+            cache_file.write(cache_json)
+
+
+
 spotify = Spotify("kristofersiimar", 'user-top-read', "c718242a780d4369866e47defc06d637", "93ca05c182d3470bbcd143090e6688a1", 'https://example.com/callback/')
 
 #kris_top_artist = spotify.top_artists(100, 0, 'long_term')
 #kris_top_songs = spotify.top_tracks(100, 0, 'long_term')
 
-
-# Writing kris_top_tracks into a file 
+# Writing kris_top_artists into a file 
 spotify.write_cache_top_artists('top_artists_file.txt')
+# Writing kris_top_tracks into a file 
+spotify.write_cache_top_tracks('top_tracks_file.txt')
 '''
+
+
+
+
 
 class Musixmatch:
 
@@ -94,6 +108,8 @@ musixmatch = Musixmatch('f85963e4bac8c2c33b149cab49c2b81d')
 
 
 
+
+
 class Database:
 
     def __init__(self, db_name):
@@ -112,6 +128,10 @@ class Database:
 
 db = Database('FinalProject.db')
 print(db)
+
+
+
+
 
 
 
@@ -155,4 +175,3 @@ for artist in kris_top_artists:
     
     db.conn.commit()
     
-print(db.cur.execute("SELECT SUM(lyrics) FROM Songs WHERE lyrics = no lyrics"))
