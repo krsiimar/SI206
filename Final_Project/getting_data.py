@@ -1,7 +1,6 @@
 import spotipy 
 from spotipy.oauth2 import SpotifyClientCredentials
 import spotipy.util as util
-from musixmatch import Musixmatch
 import requests
 import json
 import os
@@ -106,11 +105,12 @@ class Database:
         self.cur.execute("CREATE TABLE Artists (artist_id PRIMARY KEY, name TEXT)")
 
         self.cur.execute("DROP TABLE IF EXISTS Songs")
-        self.cur.execute("CREATE TABLE Songs (song_id INTEGER PRIMARY KEY, title TEXT, lyrics TEXT, artist_id TEXT, genere_id)")
+        self.cur.execute("CREATE TABLE Songs (song_id INTEGER PRIMARY KEY, title TEXT, lyrics TEXT, artist_id TEXT)")
 
         self.conn.commit()
 
 db = Database('FinalProject.db')
+print(db)
 
 
 
@@ -126,14 +126,19 @@ for artist in artists_dict['items']:
     artist_id = artist['id']
     kris_top_artists.append((artist_id, artist_name))
 
-#print(json.dumps(artists_dict, indent = 4))
 
+#print(json.dumps(artists_dict, indent = 4))
+#print(len(kris_top_artists))
 
 # Pushing artist and song data into db
+db_songs_list = []
+db_artists_list = []
+
 for artist in kris_top_artists: 
     artist_id = artist[0]
     name = artist[1]
-    
+
+    '''
     try:
         db.cur.execute("SELECT name FROM Artists WHERE name = ?", name)
         print(name + 'already in database')
@@ -142,22 +147,30 @@ for artist in kris_top_artists:
     except:
         db.cur.execute("INSERT INTO Artists (artist_id, name) VALUES (?, ?)", (artist_id, name))
         pass
+    '''
+    if name not in db_artists_list:
+        db.cur.execute("INSERT INTO Artists (artist_id, name) VALUES (?, ?)", (artist_id, name))
+        db_artists_list.append(name)
     
     top_songs = musixmatch.artist_top_tracks(name, 5)
     for song in top_songs:
         song_id = song[0]
         title = song[1]
         lyrics = musixmatch.lyrics(name, title)
-    
+        
+        '''
         try:
             db.cur.execute("SELECT title FROM Songs WHERE title = ?", title)
             print(title + ' already in database')
             continue
     
         except:
-            
             db.cur.execute("INSERT INTO Songs (song_id, title, lyrics, artist_id) VALUES (?, ?, ?, ?)", (song_id, title, lyrics, artist_id))
             continue
+        '''
+        if title not in db_songs_list:
+            db.cur.execute("INSERT INTO Songs (song_id, title, lyrics, artist_id) VALUES (?, ?, ?, ?)", (song_id, title, lyrics, artist_id))
+            db_songs_list.append(title)
     
     db.conn.commit()
     
